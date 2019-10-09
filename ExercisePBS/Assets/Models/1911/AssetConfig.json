@@ -1,0 +1,151 @@
+{
+    "AssetInfo": {
+        "AnimationCount": 0,
+        "HasSkeleton": false,
+        "HasVertexColor": false,
+        "MaterialCount": 1,
+        "Models": 4,
+        "Polygons": 5016,
+        "PreviewFile": "1911.FBX",
+        "Size": 37944052,
+        "SourceFormat": [],
+        "TextureCount": 3,
+        "Triangles": 5016,
+        "UVChannels": 1,
+        "Vertices": 15048
+    },
+    "AssetSetup": {
+        "1911.FBX": {
+            "AnimationConnectClips": {},
+            "MaterialConnectShader": {
+                "1911_mat": "Standard"
+            },
+            "MaterialConnectTextures": {
+                "1911_mat": {
+                    "AlphaTex": "",
+                    "Ambient": "",
+                    "Bump": "",
+                    "Diffuse": "1911_diff.tga",
+                    "Emission": "",
+                    "GlossTex": "",
+                    "Matallic": "",
+                    "Normal": "1911_nm.tga",
+                    "Reflection": "",
+                    "Shininess": "",
+                    "Smoothness": "",
+                    "Specular": "",
+                    "Transparent": ""
+                }
+            },
+            "MaterialConnectValues": {
+                "1911_mat": {
+                    "Ambient": [
+                        0.5879999995231628,
+                        0.5879999995231628,
+                        0.5879999995231628
+                    ],
+                    "Diffuse": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Emissive": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Reflection": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Shininess": 2.0,
+                    "Specular": [
+                        0.9449999332427979,
+                        0.9449999332427979,
+                        0.9449999332427979
+                    ],
+                    "Transparency": 1.0
+                }
+            }
+        }
+    },
+    "AssetType": "3D",
+    "Error": [],
+    "FbxAnimationList": [],
+    "FbxInformations": {
+        "1911.FBX": {
+            "HasMesh": true,
+            "HasSkeleton": false,
+            "HasVertexColor": false,
+            "MaterialConnectTextures": {
+                "1911_mat": {
+                    "AlphaTex": "",
+                    "Ambient": "",
+                    "Bump": "",
+                    "Diffuse": "1911_diff.tga",
+                    "Emission": "",
+                    "GlossTex": "",
+                    "Matallic": "",
+                    "Normal": "1911_nm.tga",
+                    "Reflection": "",
+                    "Shininess": "",
+                    "Smoothness": "",
+                    "Specular": "",
+                    "Transparent": ""
+                }
+            },
+            "MaterialConnectValues": {
+                "1911_mat": {
+                    "Ambient": [
+                        0.5879999995231628,
+                        0.5879999995231628,
+                        0.5879999995231628
+                    ],
+                    "Diffuse": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Emissive": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Reflection": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Shininess": 2.0,
+                    "Specular": [
+                        0.9449999332427979,
+                        0.9449999332427979,
+                        0.9449999332427979
+                    ],
+                    "Transparency": 1.0
+                }
+            },
+            "Models": 4,
+            "Polygons": 5016,
+            "SelfAnimation": {},
+            "Triangles": 5016,
+            "UVChannels": 1,
+            "Vertices": 15048
+        }
+    },
+    "FbxList": [
+        "1911.FBX"
+    ],
+    "FbxMeshList": [
+        "1911.FBX"
+    ],
+    "ID": "9ec8374c-5724-11e8-a0d8-005056a35516",
+    "OtherFiles": [],
+    "Textures": [
+        "1911_spec.tga",
+        "1911_nm.tga",
+        "1911_diff.tga"
+    ],
+    "Warning": []
+}
