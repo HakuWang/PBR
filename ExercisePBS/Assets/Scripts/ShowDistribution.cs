@@ -6,6 +6,22 @@ public enum IndirectLightType
     LAMBERT_DIFFUSE,
     GGX_SPECULAR
 }
+
+
+public enum SampleMethod
+{
+    GLOBALL,
+    HEMIH,
+    HEMIL
+}
+
+public enum DistributionType
+{
+    UNIFORM,
+    IMPORTANCE
+}
+
+
 public class ShowDistribution : MonoBehaviour {
     
     void Start() {
@@ -42,11 +58,16 @@ public class ShowDistribution : MonoBehaviour {
     public float radius;
     public int interval;
     public MeshRenderer prefab;
+    public MeshRenderer showSamplerPrefeb;
+
     public GameObject parent;
     public Transform poolTrans;
+    private Transform debugIndexVertPoolTrans;
     public Cubemap testCubemap;
 
     public IndirectLightType indirectLightType;
+    public SampleMethod sampleMethod;
+    public DistributionType distributionType;
 
     public int testIndex;
     public float roughness;
@@ -74,11 +95,16 @@ public class ShowDistribution : MonoBehaviour {
         else
             calculator = new GGXMaterialCalculator();
 
-        mSamplerCreator = new UniformSamplerSpaceCreator();
+        if (distributionType == DistributionType.UNIFORM)
+            mSamplerCreator = new UniformSamplerSpaceCreator();
+        else
+            mSamplerCreator = new ImportanceSamplerSpaceCreator();
 
         displayer = new MCMaterialDisplayer();
         displayer.DEBUG_INDEX = testIndex;
         displayer.Init(prefab, poolTrans);
+
+
     }
 
 
@@ -89,8 +115,19 @@ public class ShowDistribution : MonoBehaviour {
         displayer.interval = interval;
         displayer.DEBUG_INDEX = testIndex;
 
-        var space = mSamplerCreator.CreateSampler(sampleTimes);
+        //set sampler space
+        SamplerSpace space;
 
+        if (distributionType == DistributionType.UNIFORM)
+            space = mSamplerCreator.CreateSampler(sampleTimes, sampleMethod);
+        else
+            space = mSamplerCreator.CreateSampler(sampleTimes,roughness);
+
+        space.showSamplerPrefeb = showSamplerPrefeb;
+
+
+
+        //set calculator
         if (indirectLightType == IndirectLightType.LAMBERT_DIFFUSE)
         {
             (calculator as LambertMaterialCalculator).samplerSpace = space;
@@ -101,10 +138,17 @@ public class ShowDistribution : MonoBehaviour {
             (calculator as GGXMaterialCalculator).samplerSpace = space;
             (calculator as GGXMaterialCalculator).cubeMap = testCubemap;
             (calculator as GGXMaterialCalculator).roughness = roughness;
- 
+
+            if (distributionType == DistributionType.UNIFORM)
+                (calculator as GGXMaterialCalculator).importance = false;
+            else
+                (calculator as GGXMaterialCalculator).importance = true;
+
+            (calculator as GGXMaterialCalculator).sampleMethod = sampleMethod;
+
         }
 
-        displayer.CreateScene(calculator, parent.transform, mMainCameraObj.transform.position);
+        displayer.CreateScene(calculator, parent.transform, mMainCameraObj.transform.position, debugIndexVertPoolTrans);
     }
 
     #endregion

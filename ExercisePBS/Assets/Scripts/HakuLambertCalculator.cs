@@ -31,6 +31,11 @@ public class HakuLambertCalculator : IMaterialColorCalculator
 
     }
 
+    public Color GetColorAt(float thetaInRad, float phiInRad, Vector3 viewDir, bool v, Transform transform)
+    {
+        throw new NotImplementedException();
+    }
+
     private Color GetColorForOneSample(Sampler sample, Vector3 normal,bool debug)
     {
         float brdf = 1.0f / Mathf.PI;

@@ -18,5 +18,10 @@ public class CubemapMaterialCalculator : IMaterialColorCalculator
              );
         return Utils.SampleCubeMap(dir, cubeMap);
     }
+
+    public Color GetColorAt(float thetaInRad, float phiInRad, Vector3 viewDir, bool v, Transform transform)
+    {
+        throw new NotImplementedException();
+    }
 }
 

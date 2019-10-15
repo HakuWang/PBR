@@ -15,6 +15,16 @@ public static class Utils
             );
     }
 
+    public static Vector3 ThetaPhiToDirZUp(float theta, float phi)
+    {
+        return new Vector3(
+            Mathf.Sin(theta) * Mathf.Cos(phi),
+            Mathf.Sin(theta) * Mathf.Sin(phi),
+            Mathf.Cos(theta)
+            );
+    }
+    
+
     private static uint ReverseBits32(uint bits)
     {
 

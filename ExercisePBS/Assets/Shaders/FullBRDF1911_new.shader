@@ -61,7 +61,7 @@
 			sampler2D _Diffuse, _Normal, _Specular;
 			float4 _Diffuse_ST, _Normal_ST;
 			fixed4  _SpecularColor;
-			float _Gloss, _Roughness,_DisneyKss , _DisneyDiffuseRoughness;
+			float _Gloss, _Roughness,_DisneyKss , _DisneyDiffuseRoughness, _IndirectSpecFactor, _IndirectDiffFactor;
 
 			samplerCUBE _Enviroment;
 			float _F0;
@@ -132,13 +132,13 @@
 					//option2 : specIBL --- importance sampling ,to be continued
 
 					float3 f90 = 1.0;
-					indirectSpec = IndirectSpecularImportanceSampling(_MaxSampleCountMonteCarlo, worldViewDir, bump, specularF0, f90, _Roughness);
+					indirectSpec = IndirectSpecularImportanceSampling(_MaxSampleCountMonteCarlo, worldViewDir, bump, specularF0, f90, _Roughness, _IndirectSpecFactor);
 				#endif
 				
 				#ifdef UNIFORM_SAMPLING
 					//option3 : specIBL --- uniform sampling
 					
-					indirectSpec = IndirectSpecularUniformSampling(_MaxSampleCountMonteCarlo, worldViewDir, bump, specularF0, _Roughness,i.uv.xy);
+					indirectSpec = IndirectSpecularUniformSampling(_MaxSampleCountMonteCarlo, worldViewDir, bump, specularF0, _Roughness, _IndirectSpecFactor);
 				#endif
 				
 				#ifdef DEBUG_INDIRECT_SPECULAR
@@ -211,7 +211,7 @@
 				half3 indirectCol = 0;
 				#ifdef	MONTECARLO_UNIFORM_INDIRECT
 
-					indirectCol = IndirectUniformSampling(_MaxSampleCountMonteCarlo, worldViewDir, bump, specularF0, _Roughness, i.uv.xy, albedo);
+					indirectCol = IndirectUniformSampling(_MaxSampleCountMonteCarlo, worldViewDir, bump, specularF0, _Roughness,albedo, _IndirectSpecFactor, _IndirectDiffFactor);
 				#endif
 				
 				fixed3 finalCol = directCol + /*indirectSpec*/ indirectCol;

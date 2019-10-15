@@ -209,7 +209,7 @@
 					#endif
 
 					#ifdef UNIFORM_SAMPLING
-						indirectSpec = IndirectSpecularUniformSampling(_MaxSampleCountMonteCarlo, worldViewDir, bump, specularF0, _Roughness,i.uv.xy);
+						indirectSpec = IndirectSpecularUniformSampling(_MaxSampleCountMonteCarlo, worldViewDir, bump, specularF0, _Roughness);
 					#endif
 
 						

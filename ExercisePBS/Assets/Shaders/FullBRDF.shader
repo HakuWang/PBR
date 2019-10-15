@@ -1,4 +1,4 @@
-﻿Shader "Exercises/PBS/FullBRDF"
+﻿Shader "Exercises/PBS/UniformSamping"
 {
 	Properties
 	{
@@ -29,8 +29,8 @@
 			#define GGX_SPECULAR
 			#define SIMPLIFIED_DISNEY_DIFFUSE //FULL_DISNEY_DIFFUSE //LAMBERT_DIFFUSE //LAMBERT_MODIFIDED_DIFFUSE
             #define UNIFORM_SAMPLING//PERFECT_REFLECTION //IMPORTANCE_SAMPLING //
-            //#define DEBUG_INDIRECT_SPECULAR
-			#define MONTECARLO_UNIFORM_INDIRECT
+            #define DEBUG_INDIRECT_SPECULAR
+			//#define MONTECARLO_UNIFORM_INDIRECT
 
 			#include "UnityCG.cginc"
 			#include "Lighting.cginc"
@@ -61,7 +61,7 @@
 			sampler2D _Diffuse, _Normal, _Specular;
 			float4 _Diffuse_ST, _Normal_ST;
 			fixed4  _SpecularColor;
-			float _Gloss, _Roughness,_DisneyKss , _DisneyDiffuseRoughness;
+			float _Gloss, _Roughness,_DisneyKss , _DisneyDiffuseRoughness, _IndirectSpecFactor;
 
 			samplerCUBE _Enviroment;
 			float _F0;
@@ -128,7 +128,8 @@
 				#ifdef UNIFORM_SAMPLING
 					//option3 : specIBL --- uniform sampling
 					
-					indirectSpec = IndirectSpecularUniformSampling(_MaxSampleCountMonteCarlo, worldViewDir, worldNormal, specularF0, _Roughness,i.uv.xy);
+					indirectSpec = IndirectSpecularUniformSampling(_MaxSampleCountMonteCarlo, worldViewDir, worldNormal, specularF0, _Roughness, _IndirectSpecFactor);
+
 				#endif
 				
 				#ifdef DEBUG_INDIRECT_SPECULAR
@@ -152,6 +153,8 @@
 
 				//Fresnel coefficient
 				half3 specFresnel = specularF0 + (1 - specularF0) * pow(1 - dot(h, worldLight), 5);//_F0 is 0.5 or above for metal
+
+				return half4(specFresnel,1.0);
 
 				#ifdef GGX_SPECULAR
 
@@ -209,7 +212,7 @@
 				half3 indirectCol = 0;
 				#ifdef	MONTECARLO_UNIFORM_INDIRECT
 
-					indirectCol = IndirectUniformSampling(_MaxSampleCountMonteCarlo, worldViewDir, worldNormal, specularF0, _Roughness, i.uv.xy,albedo);
+					indirectCol = IndirectUniformSampling(_MaxSampleCountMonteCarlo, worldViewDir, worldNormal, specularF0, _Roughness,albedo);
 				#endif
 				
 				fixed3 finalCol = directCol + indirectCol;

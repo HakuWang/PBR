@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: FullBRDFSphere_ImportanceSampling
+  m_Shader: {fileID: 4800000, guid: 266bc28e0ca09074c81d3a4befbb6368, type: 3}
+  m_ShaderKeywords: _DIRECTDIFF_NONE _DIRECTSPEC_NONE _INDIRECTIBL_NONE _INDIRECTSPECIBL_IMPORTANCE_SAMPLING
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _Diffuse:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Enviroment:
+        m_Texture: {fileID: 8900000, guid: 760473efe593c894e88f6dc55c941553, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Normal:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Specular:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _DirectDiff: 0
+    - _DirectSpec: 0
+    - _DisneyDiffuseRoughness: 1
+    - _IndirectDiffFactor: 0
+    - _IndirectIBL: 0
+    - _IndirectSpecFactor: 1
+    - _IndirectSpecIBL: 1
+    - _IndirectWeight: 0.397
+    - _MaxSampleCountMonteCarlo: 500
+    - _Roughness: 0.13
+    - _phi: 1.61
+    m_Colors:
+    - _SpecularColor: {r: 0.6985294, g: 0.6985294, b: 0.6985294, a: 1}

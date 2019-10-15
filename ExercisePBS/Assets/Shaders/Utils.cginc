@@ -19,3 +19,25 @@ float2 Hammersley2d(uint i, uint maxSampleCount)
 {
 	return float2(float(i) / float(maxSampleCount), RadicalInverse_VdC(i));
 }
+
+
+half3 SchilickFresnel(half3 f0, half vdoth)
+{
+	float3 specFresnel = f0 + (1.0 - f0) * pow(1.0 - vdoth, 5.0);
+	return specFresnel;
+}
+
+half NDFofGGX(half alpha_tr,half ndoth)
+{
+	half Dm = alpha_tr * alpha_tr / (UNITY_PI * pow((ndoth * ndoth * (alpha_tr * alpha_tr - 1.0) + 1.0), 2.0)); 
+	return Dm;
+}
+
+half GTermofTorranceAndSparrow(half ndoth,half ndotv,half ndotl,half vdoth)
+{
+	half Gmv = 2.0 * ndoth * ndotv / vdoth;
+	half Gml = 2.0 * ndoth * ndotl / vdoth;
+	half Gm = min(1.0, min(Gmv, Gml));
+
+	return Gm;
+}

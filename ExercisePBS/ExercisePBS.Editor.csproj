@@ -309,7 +309,11 @@
     <None Include="Assets\Shaders\FullBRDF1911Old.shader" />
     <None Include="Assets\Shaders\FullBRDF1911_new.shader" />
     <None Include="Assets\Shaders\ImportanceSample.cginc" />
+    <None Include="Assets\Shaders\ImportanceSampleFrosbite.cginc" />
     <None Include="Assets\Shaders\MonteCarloUniformSample.cginc" />
+    <None Include="Assets\Shaders\PBS.shader" />
+    <None Include="Assets\Shaders\PBS1911.shader" />
+    <None Include="Assets\Shaders\PBSSphere.shader" />
     <None Include="Assets\Shaders\PureColor.shader" />
     <None Include="Assets\Shaders\SpecularOnly.shader" />
     <None Include="Assets\Shaders\Utils.cginc" />

@@ -10,6 +10,7 @@ public interface IMaterialColorCalculator
     /// <param name="theta">in radius</param>
     /// <param name="phi">in radius</param>
     Color GetColorAt(float theta, float phi,Vector3 camPos, bool debug);
+    Color GetColorAt(float thetaInRad, float phiInRad, Vector3 viewDir, bool v, Transform transform);
 }
 
 public class DummyMaterialColorCalculator : IMaterialColorCalculator
@@ -20,6 +21,11 @@ public class DummyMaterialColorCalculator : IMaterialColorCalculator
     }
 
     public Color GetColorAt(float theta, float phi, Vector3 camPos, bool debug)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Color GetColorAt(float thetaInRad, float phiInRad, Vector3 viewDir, bool v, Transform transform)
     {
         throw new NotImplementedException();
     }
@@ -48,7 +54,7 @@ class MCMaterialDisplayer
         mInstancePool = new InstancePool(prefab, poolTrans);
     }
 
-    public void CreateScene(IMaterialColorCalculator calculator, Transform parent ,Vector3 camPos )
+    public void CreateScene(IMaterialColorCalculator calculator, Transform parent ,Vector3 camPos,Transform debugIndexVertPoolTrans)
     {
         // destroy all existing instance
         foreach (var ins in mInstanceList)
@@ -68,7 +74,7 @@ class MCMaterialDisplayer
                 float phiInRad = (float)phi * Mathf.Deg2Rad;
 
                 // set position
-                var instance = mInstancePool.Alloc(parent);// GameObject.Instantiate(prefab, parent);
+                var instance = mInstancePool.Alloc(parent);
                 Vector3 pos = new Vector3(
                     Mathf.Sin(thetaInRad) * Mathf.Cos(phiInRad),
                     Mathf.Cos(thetaInRad),
@@ -82,8 +88,9 @@ class MCMaterialDisplayer
                 if (index == DEBUG_INDEX)
                     Debug.LogError( index + " instance.position = " + instance.transform.position);
 
-                var col = calculator.GetColorAt(thetaInRad, phiInRad, viewDir, index == DEBUG_INDEX);
-              
+
+                Color col = calculator.GetColorAt(thetaInRad, phiInRad, viewDir, index == DEBUG_INDEX, instance.transform);
+                
                 instance.material.SetColor("_MainColor", col);
 
                 mInstanceList.Add(instance);

@@ -1,21 +1,42 @@
 #include "Utils.cginc"
 
-void UniformSampleLightInputDir(float2 uv,float3 viewDir, float3 normal ,out float3 L, out float3 H, out float dOmega, out float space)
+void UniformGlobalLSampleLightInputDir(float2 uv,float3 viewDir, float3 normal ,out float3 L, out float3 H, out float dOmega, out float space)
 {
-	float cosTheta = sqrt(1 - uv.x) ;
+	float theta = 2 * acos(sqrt(1 - uv.x));
+	float cosTheta = cos(theta);
 	float sinTheta = sqrt(1 - cosTheta * cosTheta);
+
 	float phi = 2 * UNITY_PI * uv.y;
 	
 	//uniformly sample L in world space within whole sphere ,theta is between sampleLightDir and y-up
 	L = float3(sinTheta * cos(phi), cosTheta, sinTheta * sin(phi));
 	H = normalize(L + viewDir);
-	float ndotl = dot(normal, L);
-
-	dOmega = sinTheta;
+	dOmega = 1.0;
 	space = UNITY_PI * 4.0;
+
 }
 
-float3 UniformSampleGGX(int maxSampleCount, float3 viewDir, float3 normal, float3 f0, half roughness, float2 uvr)
+void UniformHemiLSampleLightInputDir(float2 uv, float3 viewDir, float3 normal, out float3 L, out float3 H, out float dOmega, out float space)
+{
+	float cosTheta = sqrt(1 - uv.x);
+	float sinTheta = sqrt(1 - cosTheta * cosTheta);
+	float phi = 2 * UNITY_PI * uv.y;
+
+	float3 upVector = abs(normal.z) < 0.999f ? float3(0.0f, 0.0f, 1.0f) : float3(0.0f, 1.0f, 0.0f);
+	float3 tangentX = normalize(cross(upVector, normal));
+	float3 tangentY = cross(normal, tangentX);
+
+	L = float3(sinTheta * cos(phi), sinTheta * sin(phi), cosTheta);
+	L = tangentX * L.x + tangentY * L.y + normal * L.z;
+	H = normalize(L + viewDir);
+
+	dOmega = 1;
+	space = UNITY_PI * 2.0;
+
+}
+
+
+float3 UniformSampleGGX(int maxSampleCount, float3 viewDir, float3 normal, float3 f0, half roughness, half indirectSpecFactor)
 {
 	float3 accu = 0;
 	int count = 0;
@@ -33,7 +54,8 @@ float3 UniformSampleGGX(int maxSampleCount, float3 viewDir, float3 normal, float
 			float3 L, H;
 			float dOmega, space;
 
-			UniformSampleLightInputDir(uv,viewDir, normal, L, H, dOmega, space);
+			UniformGlobalLSampleLightInputDir(uv,viewDir, normal, L, H, dOmega, space);
+			//UniformHemiLSampleLightInputDir(uv, viewDir, normal, L, H, dOmega, space); //to research more
 
 			float ndotl = dot(normal, L);
 
@@ -41,37 +63,27 @@ float3 UniformSampleGGX(int maxSampleCount, float3 viewDir, float3 normal, float
 			{
 				float3 sampleL = texCUBE(_Enviroment, L).rgb;
 
-				float vdoth = dot(viewDir, H);
-				float ndotv = dot(viewDir, normal);
+				float vdoth = clamp(dot(viewDir, H), 0.0001, 1.0);
+				float ndotv = clamp(dot(viewDir, normal), 0.01, 1.0);
 				float ndoth = dot(normal, H);
-				ndotv = saturate(ndotv);
 
-				//Fresnel coefficient
-				float3 specFresnel = f0 + (1 - f0) * pow(1 - dot(H, L), 5);
-
-				float alpha_tr = roughness * roughness; //_Roughness =  1 表示越光滑
-				half Dm = alpha_tr * alpha_tr / (UNITY_PI * pow((ndoth * ndoth * (alpha_tr * alpha_tr - 1.0) + 1.0), 2.0)); //Q  
-
-				half Gmv = 2.0 * ndoth * ndotv / vdoth;
-				half Gml = 2.0 * ndoth * ndotl / vdoth;
-				half Gm = min(1.0, min(Gmv, Gml));
-
+				float alpha_tr = roughness * roughness;
+				float3 specFresnel = SchilickFresnel(f0, vdoth);
+				half Dm = NDFofGGX( alpha_tr,  ndoth);
+				half Gm =  GTermofTorranceAndSparrow(ndoth, ndotv,ndotl,vdoth);
 				float3 brdfSpecular = specFresnel * Dm * Gm / (4.0 * ndotl * ndotv);
 
-				float lambertfr = 1.0/UNITY_PI;
-
-				accu += brdfSpecular /*( + lambertfr *(1.0 - specFresnel)) */ * sampleL * ndotl *  dOmega * space;
+				accu += brdfSpecular  * sampleL * indirectSpecFactor * ndotl* space*  dOmega ;
 				count = count + 1;
 			}
 
 		}
 	
-		accu /=  (float)count;
-
+	accu /=  (float)maxSampleCount;
 	return accu;
 }
 
-float3 UniformSampleGGXAndLambert(int maxSampleCount, float3 viewDir, float3 normal, float3 f0, half roughness, float2 uvr,float3 albedo)
+float3 UniformSampleGGXAndLambert(int maxSampleCount, float3 viewDir, float3 normal, float3 f0, half roughness,float3 albedo,half indirectSpecFactor,half indirectDiffFactor)
 {
 	float3 accu = 0;
 	int count = 0;
@@ -86,7 +98,7 @@ float3 UniformSampleGGXAndLambert(int maxSampleCount, float3 viewDir, float3 nor
 		float3 L, H;
 		float dOmega, space;
 
-		UniformSampleLightInputDir(uv, viewDir, normal, L, H, dOmega, space);
+		UniformGlobalLSampleLightInputDir(uv, viewDir, normal, L, H, dOmega, space);
 
 		float ndotl = dot(normal, L);
 
@@ -94,15 +106,16 @@ float3 UniformSampleGGXAndLambert(int maxSampleCount, float3 viewDir, float3 nor
 		{
 			float3 sampleL = texCUBE(_Enviroment, L).rgb * 0.5;
 
-			float vdoth = dot(viewDir, H);
+			float vdoth = clamp(dot(viewDir, H), 0.0001, 1.0);
 			float ndotv = dot(viewDir, normal);
 			float ndoth = dot(normal, H);
-			ndotv = saturate(ndotv);
+			//ndotv = saturate(ndotv);
+			ndotv = clamp(ndotv, 0.1, 1.0);
 
 			//Fresnel coefficient
 			float3 specFresnel = f0 + (1 - f0) * pow(1 - dot(H, L), 5);
 
-			float alpha_tr = roughness * roughness; //_Roughness =  1 表示越光滑
+			float alpha_tr = roughness * roughness; 
 			half Dm = alpha_tr * alpha_tr / (UNITY_PI * pow((ndoth * ndoth * (alpha_tr * alpha_tr - 1.0) + 1.0), 2.0)); //Q  
 
 			half Gmv = 2.0 * ndoth * ndotv / vdoth;
@@ -111,34 +124,34 @@ float3 UniformSampleGGXAndLambert(int maxSampleCount, float3 viewDir, float3 nor
 
 			float3 brdfSpecular = specFresnel * Dm * Gm / (4.0 * ndotl * ndotv);
 
-			float3 lambertfr = albedo / UNITY_PI;
+			float3 lambertfr = 1.0 / UNITY_PI;
 
-			accu +=  (brdfSpecular  + lambertfr *(1.0 - specFresnel))  * sampleL * ndotl *  dOmega * space;
+			accu +=  (brdfSpecular * indirectSpecFactor + lambertfr * (1.0 - specFresnel) * indirectDiffFactor)  * sampleL * ndotl *  dOmega * space;
 			count = count + 1;
 		}
 
 	}
 
-	accu /= (float)count;
+	accu /= (float)maxSampleCount;
 
 	return accu;
 }
 
 
-float3 IndirectSpecularUniformSampling(int maxSampleCount, float3 viewDir, float3 normal, float3 f0, half roughness,float2 uvr)
+float3 IndirectSpecularUniformSampling(int maxSampleCount, float3 viewDir, float3 normal, float3 f0, half roughness,half indirectSpecFactor)
 {
 	float3 indirectSpecular;
 
-	indirectSpecular = UniformSampleGGX(maxSampleCount, viewDir, normal, f0, roughness, uvr);
+	indirectSpecular = UniformSampleGGX(maxSampleCount, viewDir, normal, f0, roughness, indirectSpecFactor);
 	
 	return indirectSpecular;
 }
 
-float3 IndirectUniformSampling(int maxSampleCount, float3 viewDir, float3 normal, float3 f0, half roughness, float2 uvr, half3 albedo)
+float3 IndirectUniformSampling(int maxSampleCount, float3 viewDir, float3 normal, float3 f0, half roughness, half3 albedo,half indirectSpecFactor,half indirectDiffFactor)
 {
 	float3 indirect;
 
-	indirect = UniformSampleGGXAndLambert(maxSampleCount, viewDir, normal, f0, roughness, uvr, albedo);
+	indirect = UniformSampleGGXAndLambert(maxSampleCount, viewDir, normal, f0, roughness, albedo, indirectSpecFactor,indirectDiffFactor);
 
 	return indirect;
 }
