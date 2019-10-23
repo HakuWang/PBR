@@ -60,6 +60,11 @@ class GGXMaterialCalculator : IMaterialColorCalculator
         throw new NotImplementedException();
     }
 
+    public Color GetColorAt(Vector3 viewDir, bool v)
+    {
+        throw new NotImplementedException();
+    }
+
     private Color GetColorForOneSample(Sampler sample, Vector3 normal, Vector3 viewDir, bool debug)
     {
         if(importance)

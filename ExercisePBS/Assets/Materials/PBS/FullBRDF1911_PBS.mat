@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: FullBRDF1911_PBS
+  m_Shader: {fileID: 4800000, guid: 561c2a1dd26e3ae4c844fabe663c71f9, type: 3}
+  m_ShaderKeywords: ENABLE_INDIRECT_LIGHTING ENABLE_REALTIME_SAMPLING _DIRECTDIFF_SIMPLIFIED_DISNEY_DIFFUSE
+    _DIRECTSPEC_GGX _INDIRECTIBL_NONE _INDIRECTSPECIBL_IMPORTANCE_SAMPLING _LUTIBLMODE_BOTH
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _Diffuse:
+        m_Texture: {fileID: 2800000, guid: e48d2e59dba49de4ca34f5d2e27d5384, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Enviroment:
+        m_Texture: {fileID: 8900000, guid: df5927197d96ef04abcad0e1d0c99c30, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _LUT:
+        m_Texture: {fileID: 2800000, guid: e3373b50c76ca164eaec4fd09cf2554f, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Normal:
+        m_Texture: {fileID: 2800000, guid: 8a8e11841dd1404449a05ca339a387ac, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Specular:
+        m_Texture: {fileID: 2800000, guid: 2544da8dd0e37ac4b88d0100af4a5c61, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _DirectDiff: 1
+    - _DirectSpec: 1
+    - _DisableIndirectLighting: 0
+    - _DisneyDiffuseRoughness: 0.717
+    - _EnableIndirectLighting: 1
+    - _EnableRealtimeSampling: 1
+    - _IndirectDiffFactor: 1
+    - _IndirectIBL: 0
+    - _IndirectSpecFactor: 1
+    - _IndirectSpecIBL: 1
+    - _IndirectWeight: 0.152
+    - _LutIBLMode: 1
+    - _MaxSampleCountMonteCarlo: 711
+    - _Roughness: 0.124
+    m_Colors:
+    - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}

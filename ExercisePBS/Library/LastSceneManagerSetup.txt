@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scenes/PBS_UniformMonteCarlo.unity
+- path: Assets/Scenes/PBS_hdr.unity
   isLoaded: 1
   isActive: 1

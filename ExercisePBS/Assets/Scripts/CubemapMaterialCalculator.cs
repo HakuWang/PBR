@@ -23,5 +23,10 @@ public class CubemapMaterialCalculator : IMaterialColorCalculator
     {
         throw new NotImplementedException();
     }
+
+    public Color GetColorAt(Vector3 viewDir, bool v)
+    {
+        throw new NotImplementedException();
+    }
 }
 

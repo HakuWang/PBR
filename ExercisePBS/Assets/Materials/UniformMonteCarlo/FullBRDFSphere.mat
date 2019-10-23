@@ -43,7 +43,7 @@ Material:
     - _IndirectSpecFactor: 1
     - _IndirectSpecIBL: 2
     - _MaxSampleCountMonteCarlo: 5000
-    - _Roughness: 0.333
+    - _Roughness: 0.251
     - _phi: 1.61
     m_Colors:
-    - _SpecularColor: {r: 0.5, g: 0.5183824, b: 0.5183824, a: 1}
+    - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}

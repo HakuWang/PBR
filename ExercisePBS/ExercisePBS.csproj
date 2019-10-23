@@ -13,14 +13,12 @@
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
-    <CompilerResponseFile>
-    </CompilerResponseFile>
+    <CompilerResponseFile></CompilerResponseFile>
     <UnityProjectGenerator>VSTU</UnityProjectGenerator>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
     <UnityVersion>2017.4.20f2</UnityVersion>
-    <RootNamespace>
-    </RootNamespace>
+    <RootNamespace></RootNamespace>
     <LangVersion>4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -241,6 +239,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\CubemapMaterialCalculator.cs" />
+    <Compile Include="Assets\Scripts\FrDisneyIntegrator.cs" />
+    <Compile Include="Assets\Scripts\GGXIntegrator.cs" />
     <Compile Include="Assets\Scripts\GGXMaterialCalculator.cs" />
     <Compile Include="Assets\Scripts\HakuLambertCalculator.cs" />
     <Compile Include="Assets\Scripts\InstancePool.cs" />
@@ -249,24 +249,30 @@
     <Compile Include="Assets\Scripts\Sampler.cs" />
     <Compile Include="Assets\Scripts\SamplerTestor.cs" />
     <Compile Include="Assets\Scripts\ShowDistribution.cs" />
+    <Compile Include="Assets\Scripts\SplitSumIBLGenerator.cs" />
     <Compile Include="Assets\Scripts\Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\CubeMapping.shader" />
     <None Include="Assets\Shaders\CubeMappingRef.shader" />
-    <None Include="Assets\Shaders\DirectLight.shader" />
-    <None Include="Assets\Shaders\Fresnel.shader" />
-    <None Include="Assets\Shaders\FullBRDF.shader" />
-    <None Include="Assets\Shaders\FullBRDF1911Old.shader" />
-    <None Include="Assets\Shaders\FullBRDF1911_new.shader" />
+    <None Include="Assets\Shaders\DisplayLUT.shader" />
+    <None Include="Assets\Shaders\History\DirectLight.shader" />
+    <None Include="Assets\Shaders\History\Fresnel.shader" />
+    <None Include="Assets\Shaders\History\FullBRDF.shader" />
+    <None Include="Assets\Shaders\History\FullBRDF1911_new.shader" />
+    <None Include="Assets\Shaders\History\SpecularOnly.shader" />
     <None Include="Assets\Shaders\ImportanceSample.cginc" />
-    <None Include="Assets\Shaders\ImportanceSampleFrosbite.cginc" />
+    <None Include="Assets\Shaders\ImportanceSampleFrosbiteSplitSum.cginc" />
     <None Include="Assets\Shaders\MonteCarloUniformSample.cginc" />
     <None Include="Assets\Shaders\PBS.shader" />
-    <None Include="Assets\Shaders\PBS1911.shader" />
+    <None Include="Assets\Shaders\PBSRealTime.shader" />
     <None Include="Assets\Shaders\PBSSphere.shader" />
+    <None Include="Assets\Shaders\PBSSphereRealTime.shader" />
+    <None Include="Assets\Shaders\PanoMapping.shader" />
+    <None Include="Assets\Shaders\PanoMappingRef.shader" />
     <None Include="Assets\Shaders\PureColor.shader" />
-    <None Include="Assets\Shaders\SpecularOnly.shader" />
+    <None Include="Assets\Shaders\SplitSumApply.shader" />
+    <None Include="Assets\Shaders\SplitSumApply1911.shader" />
     <None Include="Assets\Shaders\Utils.cginc" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

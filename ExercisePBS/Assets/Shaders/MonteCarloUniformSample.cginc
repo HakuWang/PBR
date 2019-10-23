@@ -61,7 +61,8 @@ float3 UniformSampleGGX(int maxSampleCount, float3 viewDir, float3 normal, float
 
 			if (ndotl > 0)
 			{
-				float3 sampleL = texCUBE(_Enviroment, L).rgb;
+				float3 sampleL = samplePanoramicLOD(_Enviroment, L, 0) /*texCUBE(_Enviroment, L).rgb*/;
+				
 
 				float vdoth = clamp(dot(viewDir, H), 0.0001, 1.0);
 				float ndotv = clamp(dot(viewDir, normal), 0.01, 1.0);
@@ -86,13 +87,15 @@ float3 UniformSampleGGX(int maxSampleCount, float3 viewDir, float3 normal, float
 float3 UniformSampleGGXAndLambert(int maxSampleCount, float3 viewDir, float3 normal, float3 f0, half roughness,float3 albedo,half indirectSpecFactor,half indirectDiffFactor)
 {
 	float3 accu = 0;
-	int count = 0;
-
 
 	for (int i = 0; i < maxSampleCount; i++)
 	{
 
-		//get random parameter u,v
+		float3 specVal = 0;
+		float3 diffVal = 0;
+		float3 specFresnel = 1;
+
+		//Specular IBL
 		float2 uv = Hammersley2d(i, maxSampleCount);
 
 		float3 L, H;
@@ -104,7 +107,7 @@ float3 UniformSampleGGXAndLambert(int maxSampleCount, float3 viewDir, float3 nor
 
 		if (ndotl > 0)
 		{
-			float3 sampleL = texCUBE(_Enviroment, L).rgb * 0.5;
+			float3 sampleL = /*texCUBE(_Enviroment, L).rgb*/ samplePanoramicLOD(_Enviroment, L, 0)  * 0.5;
 
 			float vdoth = clamp(dot(viewDir, H), 0.0001, 1.0);
 			float ndotv = dot(viewDir, normal);
@@ -113,7 +116,7 @@ float3 UniformSampleGGXAndLambert(int maxSampleCount, float3 viewDir, float3 nor
 			ndotv = clamp(ndotv, 0.1, 1.0);
 
 			//Fresnel coefficient
-			float3 specFresnel = f0 + (1 - f0) * pow(1 - dot(H, L), 5);
+			specFresnel = f0 + (1 - f0) * pow(1 - dot(H, L), 5);
 
 			float alpha_tr = roughness * roughness; 
 			half Dm = alpha_tr * alpha_tr / (UNITY_PI * pow((ndoth * ndoth * (alpha_tr * alpha_tr - 1.0) + 1.0), 2.0)); //Q  
@@ -124,11 +127,46 @@ float3 UniformSampleGGXAndLambert(int maxSampleCount, float3 viewDir, float3 nor
 
 			float3 brdfSpecular = specFresnel * Dm * Gm / (4.0 * ndotl * ndotv);
 
-			float3 lambertfr = 1.0 / UNITY_PI;
-
-			accu +=  (brdfSpecular * indirectSpecFactor + lambertfr * (1.0 - specFresnel) * indirectDiffFactor)  * sampleL * ndotl *  dOmega * space;
-			count = count + 1;
+			float3 lambertfr = albedo  / UNITY_PI;
+			specVal = brdfSpecular * indirectSpecFactor * sampleL * ndotl *  dOmega * space;
 		}
+
+
+		//diffuse IBL
+		
+		UniformHemiLSampleLightInputDir(uv, viewDir, normal, L, H, dOmega, space);
+
+		ndotl = dot(normal, L);
+
+		if (ndotl > 0)
+		{
+
+			float3 sampleL =/* texCUBE(_Enviroment, L)*/samplePanoramicLOD(_Enviroment, L, 0).rgb;
+
+			float vdoth = clamp(dot(viewDir, H), 0.0001, 1.0);
+			float ndotv = clamp(dot(viewDir, normal), 0.0001, 1.0);
+			float ndoth = dot(normal, H);
+			float hdotl = dot(H, L);
+
+			float alpha_tr = roughness * roughness;
+
+			//Disney Diffuse
+			float Fss90 = sqrt(roughness)* hdotl * hdotl;
+			float FD90 = 0.5 + 2 * Fss90;
+			float fd = (1 + (FD90 - 1) * pow(1 - ndotl, 5)) * (1 + (FD90 - 1) * pow(1 - ndotv, 5));
+			float3 brdfDiffuse = ndotl * saturate(ndotv) * fd;//1.0 / UNITY_PI;
+			float3 pdfDiff = ndotl / UNITY_PI;//1.0;
+			diffVal = ndotl * brdfDiffuse / pdfDiff * sampleL * indirectDiffFactor;//Moving Frosbite
+
+
+			//Lambert 
+			//float3 brdfDiffuse = 1.0 / UNITY_PI;
+			//float3 pdfDiff = ndotl / UNITY_PI;//1.0;
+			//diffVal = ndotl * brdfDiffuse / pdfDiff * sampleL * indirectDiffFactor;//Moving Frosbite
+		}
+
+		accu += specVal + albedo * diffVal * (1.0 - specFresnel);
+		
 
 	}
 

@@ -11,6 +11,7 @@ public interface IMaterialColorCalculator
     /// <param name="phi">in radius</param>
     Color GetColorAt(float theta, float phi,Vector3 camPos, bool debug);
     Color GetColorAt(float thetaInRad, float phiInRad, Vector3 viewDir, bool v, Transform transform);
+    Color GetColorAt(Vector3 viewDir, bool v);
 }
 
 public class DummyMaterialColorCalculator : IMaterialColorCalculator
@@ -26,6 +27,11 @@ public class DummyMaterialColorCalculator : IMaterialColorCalculator
     }
 
     public Color GetColorAt(float thetaInRad, float phiInRad, Vector3 viewDir, bool v, Transform transform)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Color GetColorAt(Vector3 viewDir, bool v)
     {
         throw new NotImplementedException();
     }
