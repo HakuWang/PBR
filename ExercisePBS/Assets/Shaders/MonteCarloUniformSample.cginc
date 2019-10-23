@@ -84,7 +84,7 @@ float3 UniformSampleGGX(int maxSampleCount, float3 viewDir, float3 normal, float
 	return accu;
 }
 
-float3 UniformSampleGGXAndLambert(int maxSampleCount, float3 viewDir, float3 normal, float3 f0, half roughness,float3 albedo,half indirectSpecFactor,half indirectDiffFactor)
+float3 UniformSampleGGXAndLambert(int maxSampleCount, float3 viewDir, float3 normal, float3 f0, half roughness,float3 albedo )
 {
 	float3 accu = 0;
 
@@ -128,7 +128,7 @@ float3 UniformSampleGGXAndLambert(int maxSampleCount, float3 viewDir, float3 nor
 			float3 brdfSpecular = specFresnel * Dm * Gm / (4.0 * ndotl * ndotv);
 
 			float3 lambertfr = albedo  / UNITY_PI;
-			specVal = brdfSpecular * indirectSpecFactor * sampleL * ndotl *  dOmega * space;
+			specVal = brdfSpecular  * sampleL * ndotl *  dOmega * space;
 		}
 
 
@@ -156,7 +156,7 @@ float3 UniformSampleGGXAndLambert(int maxSampleCount, float3 viewDir, float3 nor
 			float fd = (1 + (FD90 - 1) * pow(1 - ndotl, 5)) * (1 + (FD90 - 1) * pow(1 - ndotv, 5));
 			float3 brdfDiffuse = ndotl * saturate(ndotv) * fd;//1.0 / UNITY_PI;
 			float3 pdfDiff = ndotl / UNITY_PI;//1.0;
-			diffVal = ndotl * brdfDiffuse / pdfDiff * sampleL * indirectDiffFactor;//Moving Frosbite
+			diffVal = ndotl * brdfDiffuse / pdfDiff * sampleL ;//Moving Frosbite
 
 
 			//Lambert 
@@ -185,11 +185,11 @@ float3 IndirectSpecularUniformSampling(int maxSampleCount, float3 viewDir, float
 	return indirectSpecular;
 }
 
-float3 IndirectUniformSampling(int maxSampleCount, float3 viewDir, float3 normal, float3 f0, half roughness, half3 albedo,half indirectSpecFactor,half indirectDiffFactor)
+float3 IndirectUniformSampling(int maxSampleCount, float3 viewDir, float3 normal, float3 f0, half roughness, half3 albedo )
 {
 	float3 indirect;
 
-	indirect = UniformSampleGGXAndLambert(maxSampleCount, viewDir, normal, f0, roughness, albedo, indirectSpecFactor,indirectDiffFactor);
+	indirect = UniformSampleGGXAndLambert(maxSampleCount, viewDir, normal, f0, roughness, albedo);
 
 	return indirect;
 }

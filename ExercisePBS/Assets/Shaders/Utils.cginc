@@ -60,7 +60,7 @@ float3 samplePanoramicLOD(sampler2D panoMap, float3 dir, float lod)
 	float n = length(dir.xz);
 	float2 pos = float2((n > 0.0000001) ? dir.x / n : 0.0, dir.y);
 	pos = acos(pos)*0.31831;
-	pos.x = (dir.z > 0.0) ? pos.x*0.5: 1.0 - (pos.x*0.5) ;
+	pos.x = (dir.z > 0.0) ? 1.0 - (pos.x*0.5):  pos.x*0.5;
 	pos.y = 1.0 - pos.y;
 
 	float4 hdrColor = tex2Dlod(panoMap, half4(pos, 0, lod));
@@ -101,4 +101,18 @@ int PrefilterMipLevel(int maxSampleCount, float alpha_tr,float ndoth,float hdotl
 	mipLevel = (int)clamp(mipLevel, 0, maxLevel);
 	
 	return mipLevel;
+}
+
+float computeSDLOD(float3 Ln, float p, int nbSamples)
+{
+	return max(0.0, 12.0 - 1.5 - 0.5 * log2(float(nbSamples) * p * sqrt(1.0 - Ln.y*Ln.y)));
+}
+
+float2 fibonacci2D(int i, int nbSample)
+{
+	return float2(
+		(float(i) + 0.5) / float(nbSample),
+		float(i + 1) * 0.618034
+		
+		);
 }

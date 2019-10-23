@@ -8,8 +8,9 @@
 		[Space(30)]
 
 		_Roughness("Roughness",Range(0.02,1)) = 0.5
-			//_DisneyDiffuseRoughness("Roughness for Disney diffuse ",Range(0,1)) = 0.5
+		_Metallic("Metallic",Range(0,1)) = 1
 
+		//_DisneyDiffuseRoughness("Roughness for Disney diffuse ",Range(0,1)) = 0.5
 
 		[Header(Direct Light Settings)]
 		[KeywordEnum(NONE,GGX)]_DirectSpec("Direct Specular mode",Float) = 0
@@ -25,11 +26,8 @@
 
 		[Header(Realtime Sampling Settings)]
 		[KeywordEnum(NONE,IMPORTANCE_SAMPLING,UNIFORM_SAMPLING,PERFECT_REFLECTION,SPLITSUM)]_IndirectSpecIBL("Indirect Specular mode",Float) = 0
-		[KeywordEnum(NONE,IMPORTANCE_SAMPLING,UNIFORM_SAMPLING)]_IndirectIBL("Indirect mode (will make Indirect Specular mode not used)",Float) = 0
+		[KeywordEnum(NONE,IMPORTANCE_SAMPLING,SPLITSUM,UNIFORM_SAMPLING)]_IndirectIBL("Indirect mode (will make Indirect Specular mode not used)",Float) = 0
 		_MaxSampleCountMonteCarlo("Max Sample Count of Monte Carlo",Range(1,5000)) = 32
-		_IndirectDiffFactor("Indirect Diffuse L factor",Range(0,1)) = 0.5
-		_IndirectSpecFactor("Indirect Specular L factor",Range(0,1)) = 0.5
-
 
 		[Header(LUT for Indirect Light  Settings)]
 		[KeywordEnum(SPEC,BOTH)]_LutIBLMode("IBL Mode",Float) = 0
@@ -55,7 +53,7 @@
 			#pragma multi_compile _DIRECTSPEC_NONE _DIRECTSPEC_GGX
 			#pragma multi_compile _DIRECTDIFF_NONE  _DIRECTDIFF_SIMPLIFIED_DISNEY_DIFFUSE _DIRECTDIFF_FULL_DISNEY_DIFFUSE _DIRECTDIFF_LAMBERT_DIFFUSE _DIRECTDIFF_LAMBERT_MODIFIDED_DIFFUSE
 			#pragma multi_compile _INDIRECTSPECIBL_NONE _INDIRECTSPECIBL_IMPORTANCE_SAMPLING _INDIRECTSPECIBL_UNIFORM_SAMPLING _INDIRECTSPECIBL_PERFECT_REFLECTION _INDIRECTSPECIBL_SPLITSUM
-			#pragma multi_compile _INDIRECTIBL_NONE _INDIRECTIBL_IMPORTANCE_SAMPLING _INDIRECTIBL_UNIFORM_SAMPLING
+			#pragma multi_compile _INDIRECTIBL_NONE _INDIRECTIBL_IMPORTANCE_SAMPLING _INDIRECTIBL_SPLITSUM _INDIRECTIBL_UNIFORM_SAMPLING
 			#pragma multi_compile _LUTIBLMODE_SPEC _LUTIBLMODE_BOTH
 
 			#include "UnityCG.cginc"
@@ -82,12 +80,13 @@
 				fixed4 TtoW1 : TEXCOORD3;
 				fixed4 TtoW2 : TEXCOORD4;
 				fixed3 worldRefl : TEXCOORD5;
+				half3 vlight: TEXCOORD7;
 			};
 
 			sampler2D _Diffuse, _Normal, _Specular, _LUT;
 			float4 _Diffuse_ST, _Normal_ST;
 			fixed4  _SpecularColor;
-			float _Gloss, _Roughness,_DisneyKss , _DisneyDiffuseRoughness, _IndirectDiffFactor, _IndirectSpecFactor;
+			float _Gloss, _Roughness,_DisneyKss , _DisneyDiffuseRoughness, _Metallic;
 
 			sampler2D _Enviroment;
 			int _MaxSampleCountMonteCarlo;
@@ -118,6 +117,9 @@
 				fixed3 worldViewDir = UnityWorldSpaceViewDir(worldPos);
 				o.worldRefl = reflect(-worldViewDir,worldNormal);
 
+				o.vlight = ShadeSH9(v.normal);
+
+
 				return o;
 
 			}
@@ -130,7 +132,7 @@
 				fixed3 worldNormal = normalize(float3(i.TtoW0.z, i.TtoW1.z, i.TtoW2.z));
 
 				half3 specular = 0;
-				half3 specularF0 =  _SpecularColor;
+				half3 specularF0 = lerp(unity_ColorSpaceDielectricSpec,_SpecularColor, _Metallic);
 
 
 				half ndotl = dot(worldNormal, worldLight);
@@ -142,9 +144,6 @@
 
 				//direct specular
 				
-
-
-
 				//Fresnel coefficient
 				half3 specFresnel = specularF0 + (1 - specularF0) * pow(1 - dot(h, worldLight), 5);//_F0 is 0.5 or above for metal
 
@@ -173,7 +172,7 @@
 
 
 				//direct diffuse 
-				fixed3 albedo = tex2D(_Diffuse, i.uv.xy).rgb;
+				fixed3 albedo = 1;// tex2D(_Diffuse, i.uv.xy).rgb;
 				half  diffuseTerm = 0;
 				
 				#ifdef _DIRECTDIFF_LAMBERT_DIFFUSE
@@ -233,7 +232,7 @@
 
 				   #ifdef _INDIRECTSPECIBL_IMPORTANCE_SAMPLING
 					   //option2 : specIBL --- importance sampling ,to be continued
-					   indirectSpec = IndirectSpecularImportanceSampling(_MaxSampleCountMonteCarlo, worldViewDir, worldNormal, specularF0, f90, _Roughness, _IndirectSpecFactor);
+					   indirectSpec = IndirectSpecularImportanceSampling(_MaxSampleCountMonteCarlo, worldViewDir, worldNormal, specularF0, f90, _Roughness);
 				   #endif
 
 				   #ifdef _INDIRECTSPECIBL_UNIFORM_SAMPLING
@@ -252,13 +251,25 @@
 				   indirectCol = indirectSpec;
 
 				   //indirect IBL including specular and diffuse
+
+				   float3 diffCol = albedo * (1 - _Metallic);
 				   #ifdef	_INDIRECTIBL_UNIFORM_SAMPLING
-					   indirectCol = IndirectUniformSampling(albedo,_MaxSampleCountMonteCarlo, worldViewDir, worldNormal, specularF0, _Roughness,albedo, _IndirectSpecFactor, _IndirectDiffFactor);
+					   indirectCol = IndirectUniformSampling(diffCol,_MaxSampleCountMonteCarlo, worldViewDir, worldNormal, specularF0, _Roughness, diffCol );
 				   #endif
 
 				   #ifdef	_INDIRECTIBL_IMPORTANCE_SAMPLING
-					   indirectCol = IndirectImportanceSampling(albedo, _MaxSampleCountMonteCarlo, worldViewDir, worldNormal, specularF0, f90, _Roughness, _IndirectSpecFactor, _IndirectDiffFactor);
+					   
+					   indirectCol = IndirectImportanceSampling(diffCol, _MaxSampleCountMonteCarlo, worldViewDir, worldNormal, specularF0, f90, _Roughness);
+
+					  // indirectCol +=  i.vlight*  diffCol * (1 - specularF0); 
 				   #endif
+
+
+#ifdef _INDIRECTIBL_SPLITSUM
+
+					   indirectSpec = IndirectSplitSumFrosibite(_MaxSampleCountMonteCarlo, worldViewDir, worldNormal, specularF0, f90, _Roughness);
+
+#endif
 
 					#else
 

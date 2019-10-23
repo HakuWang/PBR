@@ -6,7 +6,7 @@ void ImportanceSampleFrosbite(int maxSampleCount, float3 viewDir, float3 normal,
 	for (int i = 0; i < maxSampleCount; i++)
 	{
 		//get random parameter u,v
-		float2 uv = Hammersley2d(i, maxSampleCount);
+		float2 uv = fibonacci2D/*Hammersley2d */(i, maxSampleCount);
 
 		//compute theta and phi from u,v for half vector H
 		float alpha_tr = roughness * roughness;
@@ -23,17 +23,18 @@ void ImportanceSampleFrosbite(int maxSampleCount, float3 viewDir, float3 normal,
 
 		float3 L = 2 * dot(H, viewDir)* H - viewDir;
 
-		float vdoth = max( dot(viewDir, H), 0.0001 );
-		float ndotv = max( dot(viewDir, normal), 0.0001);
-		float ndoth = max( dot(normal, H), 0.0001 );
-		float ndotl = max( dot(normal, L), 0.0001 );
+		float vdoth = max( abs( dot(viewDir, H)), 1e-8 );
+		float ndotv = max( abs(dot(viewDir, normal)), 1e-8);
+		float ndoth = max( abs(dot(normal, H)), 1e-8);
+		float ndotl = max( dot(normal, L), 1e-8);
 
 		float Gv = SmithG1ForGGX(ndotv, alpha_tr);
 		float Gl = SmithG1ForGGX(ndotl, alpha_tr);
 
 		float G = Gv * Gl;
 		float G_Vis = G * vdoth / (ndoth * ndotv);
-		float Fc = pow(1 - vdoth, 5);
+		float index = (-5.55473 * vdoth - 6.98316)* vdoth;
+		float Fc = pow(2, index );  //   pow(1 - vdoth, 5);
 	
 		accuDFG.x += (1 - Fc) * G_Vis;
 		accuDFG.y += Fc * G_Vis;
@@ -41,10 +42,13 @@ void ImportanceSampleFrosbite(int maxSampleCount, float3 viewDir, float3 normal,
 
 		//compute LD for each sample
 		
-		float hdotl = max(dot(H, L), 0.0001);
+		half Dm = NDFofGGX(alpha_tr, ndoth);
+		float3 pdf = Dm * ndoth / (4.0 * vdoth);//参考 GGX 逆采样变换推导 pdf
 
-		int mipLevel = PrefilterMipLevel(maxSampleCount, alpha_tr, ndoth, hdotl, 8);
-		float3 sampleL = samplePanoramicLOD(_Enviroment, L, mipLevel);
+		float mipLevel = PrefilterMipLevel(maxSampleCount, alpha_tr, ndoth, vdoth, 12);
+		float sdMipLevel = computeSDLOD(L, pdf, maxSampleCount);
+
+		float3 sampleL = samplePanoramicLOD(_Enviroment, L, sdMipLevel);
 
 		float weight = ndotl;
 
@@ -52,7 +56,7 @@ void ImportanceSampleFrosbite(int maxSampleCount, float3 viewDir, float3 normal,
 		accLDweight += weight;
 	}
 
-	accuDFG /= maxSampleCount;
+	accuDFG /= (float) maxSampleCount;
 	accuLD /= accLDweight;
 }
 
@@ -69,7 +73,7 @@ float3 SpecLDImportanceSampleFrosbite(int maxSampleCount, float3 viewDir, float3
 	for (int i = 0; i < maxSampleCount; i++)
 	{
 		//get random parameter u,v
-		float2 uv = Hammersley2d(i, maxSampleCount);
+		float2 uv = fibonacci2D/*Hammersley2d*/(i, maxSampleCount);
 
 		//compute theta and phi from u,v for half vector H
 		float alpha_tr = roughness * roughness;
@@ -90,7 +94,7 @@ float3 SpecLDImportanceSampleFrosbite(int maxSampleCount, float3 viewDir, float3
 		float hdotl = max(dot(H, L), 0.0001);
 
 		//compute LD for each sample
-		int mipLevel = PrefilterMipLevel(maxSampleCount, alpha_tr, ndoth, hdotl, 8);
+		int mipLevel = PrefilterMipLevel(maxSampleCount, alpha_tr, ndoth, hdotl, 12);
 
 		float3 sampleL = samplePanoramicLOD(_Enviroment, L, mipLevel);
 
