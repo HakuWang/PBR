@@ -45,8 +45,7 @@
 
 				fixed4 frag(v2f i) : SV_Target
 				{
-					fixed4 col = tex2D(_LUT, i.uv
-					);
+					fixed4 col = tex2D(_LUT, i.uv);
 					return col;
 				}
 				ENDCG

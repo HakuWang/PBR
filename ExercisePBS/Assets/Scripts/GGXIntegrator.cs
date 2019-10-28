@@ -30,12 +30,12 @@ class GGXIntegrator : IMaterialColorCalculator
             
             Color sampleVal =  GetColorForOneSample(sample, normal, viewDir, debug);
             result += sampleVal;
-            if (debug)
-                Debug.Log("sample index = " + i + " : sample value = " + sampleVal);
+            //if (debug)
+            //    Debug.Log("sample index = " + i + " : sample value = " + sampleVal);
         }
 
-        if (debug)
-            Debug.LogError("GGXIntegrator value = " + result / samplerSpace.samplerList.Length + " ,int negNdotLNum = " + negNdotLNum);
+        //if (debug)
+        //    Debug.LogError("GGXIntegrator value = " + result / samplerSpace.samplerList.Length + " ,int negNdotLNum = " + negNdotLNum);
 
 
         return result / samplerSpace.samplerList.Length;
@@ -73,15 +73,13 @@ class GGXIntegrator : IMaterialColorCalculator
         H = tangentX * H.x + tangentY * H.y + normal * H.z;
 
         Vector3 L = Vector3.Reflect (-viewDir, H);// 2 * dot(H, viewDir)* H - viewDir;
-              
-        float nDotL = Mathf.Clamp01(Vector3.Dot(normal, L));
-        if (nDotL <= 0)
-            return Color.black;
 
-        float vdoth = Mathf.Clamp01(Vector3.Dot(viewDir, H));
-        float ndotv = Mathf.Clamp01(Vector3.Dot(viewDir, normal));
-        float ndoth = Mathf.Clamp01(Vector3.Dot(normal, H));
-        float hDotL = Mathf.Clamp01(Vector3.Dot(H, L));
+     
+        float vdoth = Mathf.Max(Mathf.Abs(Vector3.Dot(viewDir, H)), 1e-8f);
+        float ndotv = Mathf.Max(Mathf.Abs(Vector3.Dot(viewDir, normal)), 1e-8f);
+        float ndoth = Mathf.Max(Mathf.Abs(Vector3.Dot(normal, H)), 1e-8f);
+        float nDotL = Mathf.Max(Vector3.Dot(normal, L), 1e-8f);
+
 
 
         Color sampleValue =  Color.black;
@@ -92,14 +90,14 @@ class GGXIntegrator : IMaterialColorCalculator
 
         float G = Gv * Gl;
         float G_Vis = G * vdoth / (ndoth * ndotv);
-        float Fc = Mathf.Pow(1f - vdoth, 5f);
+        // float Fc = Mathf.Pow(1f - vdoth, 5f);
+
+        float index = (-5.55473F * vdoth - 6.98316F) * vdoth;
+        float Fc =Mathf.Pow(2f, index); 
+
         sampleValue.r = (1 - Fc) * G_Vis;
         sampleValue.g = Fc * G_Vis;
-        float f0 = 1.0f;
-
-        float specFresnel = f0 + (1.0f - f0) * Mathf.Pow(1.0f - vdoth, 5.0f);
-        sampleValue.b = specFresnel;
-
+   
         return sampleValue;
         
 

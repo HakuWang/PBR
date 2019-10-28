@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
+/*------------Generate LUT -----------------*/
+//press C to run 
+
 class SplitSumIBLGenerator : MonoBehaviour
 {
     #region
@@ -43,7 +46,7 @@ class SplitSumIBLGenerator : MonoBehaviour
 
     public void Init()
     {
-        mLUT = new Texture2D(texWidth, texHeight,TextureFormat.RGBA32,false);
+        mLUT = new Texture2D(texWidth, texHeight,TextureFormat.RGBAHalf,false);
 
         mSpecIntegrator = new GGXIntegrator();
         mDiffIntegrator = new FrDisneyIntegrator();
@@ -62,11 +65,10 @@ class SplitSumIBLGenerator : MonoBehaviour
             for(int j=0; j < texWidth; j++)
             {
                 float roughness = 1.0f / (texHeight - 1) * i;
-             //   roughness += 0.5f * 1f / texHeight; 
-              // roughness = Mathf.Clamp(roughness, 0.5f * 1f / texHeight, 1.0f);
-
+           
                 float ndotv = 1.0f / (texWidth - 1) * j;
-              //  ndotv += 0.5f * 1f / texWidth;
+                //  ndotv += 0.5f * 1f / texWidth;
+
                 ndotv = Mathf.Clamp(ndotv, 0.5f * 1f / texWidth,1.0f);
                 SamplerSpace specSpace = mSpecSamplerCreator.CreateSampler(preIntegrateSampleCount, roughness);
                 mSpecIntegrator.samplerSpace = specSpace;
@@ -83,7 +85,7 @@ class SplitSumIBLGenerator : MonoBehaviour
 
                Color diffIntegratedCol = mDiffIntegrator.GetColorAt(viewDir, false , specIntegratedCol.b);
 
-                Color integratedCol = new Color(specIntegratedCol.r, specIntegratedCol.g, diffIntegratedCol.b);
+                Color integratedCol = new Color(specIntegratedCol.r, specIntegratedCol.g, diffIntegratedCol.b );
 
                 mPixelArray[i * texWidth + j] = integratedCol;
                 
@@ -93,7 +95,7 @@ class SplitSumIBLGenerator : MonoBehaviour
         mDisplayLUTMat.SetTexture("_LUT", mLUT);
 
         byte[] _bytes = mLUT.EncodeToPNG();
-        System.IO.File.WriteAllBytes("D:/Haku/HakuGitRepository/PBS_Exercise/ExercisePBS/Assets/Textures/HakuLUT.png", _bytes);
+        System.IO.File.WriteAllBytes("D:/Haku/HakuGitRepository/PBS_Exercise/ExercisePBS/Assets/Textures/SDHakuLUT_Diff_RGBAHalf1.png", _bytes);
         Debug.Log(_bytes.Length / 1024 + "LUT was saved as: HakuLUT" );
 
 

@@ -202,7 +202,10 @@ float3 ImportanceSampleforSpecandUniformDiff(float3 diffCol, int maxSampleCount,
 			float hdotl = clamp(dot(H, L), 0.0001, 1.0);
 
 			int mipLevel = PrefilterMipLevel(maxSampleCount, alpha_tr, ndoth, hdotl, 12);
-			float3 sampleL = samplePanoramicLOD(_Enviroment, L, mipLevel);
+			pdf = ndotl / UNITY_PI;//参考 GGX 逆采样变换推导 pdf
+			sdMipLevel = computeSDLOD(L, pdf, maxSampleCount);
+
+			float3 sampleL = samplePanoramicLOD(_Enviroment, L, sdMipLevel);
 
 			//Disney Diffuse
 			float3 brdfDiffuse = /*DisneyDiffuseBRDF*/FrosbiteDisneyDiffuseBRDF(roughness, hdotl, ndotl, ndotv);
@@ -212,7 +215,6 @@ float3 ImportanceSampleforSpecandUniformDiff(float3 diffCol, int maxSampleCount,
 			float3 pdfDiff = ndotl / UNITY_PI;
 			diffVal = ndotl * brdfDiffuse / pdfDiff * sampleL;
 
-		//	diffVal = ndotl * brdfDiffuse  * sampleL * 2 * UNITY_PI;
 
         }
 

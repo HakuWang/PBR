@@ -41,9 +41,15 @@ public static class Utils
     }
     public static Vector2 Hammersley2d(uint i, uint maxSampleCount)
     {
-        return new Vector2((float)(i) / (float)(maxSampleCount), RadicalInverse_VdC(i));
+        return new Vector2(i/ maxSampleCount, RadicalInverse_VdC(i));
     }
-
+    public static Vector2 fibonacci2D(int i, int nbSample)
+    {
+        return new Vector2(
+            (float)(i + 0.5) / nbSample,
+            (float) ((i + 1) * 0.618034)
+            );
+    }
 
     public static Color SampleCubeMap(Vector3 dir, Cubemap cube)
     {

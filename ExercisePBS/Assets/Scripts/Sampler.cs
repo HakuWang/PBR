@@ -107,7 +107,8 @@ public class UniformSamplerSpaceCreator : ISamplerSpaceCreator
         Sampler sample = new Sampler();
 
         //Hammersley2d psude random
-        Vector2 uv = Utils.Hammersley2d((uint)i, (uint)samplerCount);
+        //   Vector2 uv = Utils.Hammersley2d((uint)i, (uint)samplerCount);
+        Vector2 uv = Utils.fibonacci2D(i, samplerCount);
         float u = uv.x;
         float v = uv.y;
 
@@ -174,7 +175,8 @@ public class ImportanceSamplerSpaceCreator : ISamplerSpaceCreator
         Sampler sample = new Sampler();
 
         //Hammersley2d psude random
-        Vector2 uv = Utils.Hammersley2d((uint)i, (uint)samplerCount);
+          //  Vector2 uv = Utils.Hammersley2d((uint)i, (uint)samplerCount);
+        Vector2 uv = Utils.fibonacci2D(i, samplerCount);
         float u = uv.x;
         float v = uv.y;
 

@@ -304,6 +304,8 @@
     <None Include="Assets\Shaders\CubeMapping.shader" />
     <None Include="Assets\Shaders\CubeMappingRef.shader" />
     <None Include="Assets\Shaders\DisplayLUT.shader" />
+    <None Include="Assets\Shaders\EnvBRDFApprox.cginc" />
+    <None Include="Assets\Shaders\GenerateLUT.shader" />
     <None Include="Assets\Shaders\History\DirectLight.shader" />
     <None Include="Assets\Shaders\History\Fresnel.shader" />
     <None Include="Assets\Shaders\History\FullBRDF.shader" />
@@ -312,16 +314,16 @@
     <None Include="Assets\Shaders\ImportanceSample.cginc" />
     <None Include="Assets\Shaders\ImportanceSampleFrosbiteSplitSum.cginc" />
     <None Include="Assets\Shaders\MonteCarloUniformSample.cginc" />
-    <None Include="Assets\Shaders\PBS.shader" />
     <None Include="Assets\Shaders\PBSRealTime.shader" />
-    <None Include="Assets\Shaders\PBSSphere.shader" />
     <None Include="Assets\Shaders\PBSSphereRealTime.shader" />
+    <None Include="Assets\Shaders\PBSUtils.cginc" />
+    <None Include="Assets\Shaders\PBS_MetallicSetup.shader" />
+    <None Include="Assets\Shaders\PBS_SpecularSetup.shader" />
     <None Include="Assets\Shaders\PanoMapping.shader" />
     <None Include="Assets\Shaders\PanoMappingRef.shader" />
     <None Include="Assets\Shaders\PureColor.shader" />
     <None Include="Assets\Shaders\SplitSumApply.shader" />
     <None Include="Assets\Shaders\SplitSumApply1911.shader" />
-    <None Include="Assets\Shaders\Utils.cginc" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

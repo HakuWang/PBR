@@ -36,7 +36,7 @@ class FrDisneyIntegrator : IMaterialColorCalculator
         if (debug)
             Debug.LogError("Disney diffuse Integrator value = " + result / samplerSpace.samplerList.Length + " ,int negNdotLNum = " + negNdotLNum);
 
-        return result * Mathf.PI / samplerSpace.samplerList.Length;
+        return result  / samplerSpace.samplerList.Length;
     }
 
     public Color GetColorAt(float theta, float phi, bool debug)
@@ -76,15 +76,13 @@ class FrDisneyIntegrator : IMaterialColorCalculator
         L = tangentX * L.x + tangentY * L.y + normal * L.z;
 
         Vector3 H = Vector3.Normalize(L + viewDir);
-              
-        float nDotL = Mathf.Clamp01(Vector3.Dot(normal, L));
-        if (nDotL <= 0)
-            return Color.black;
-    
-        float vdoth = Mathf.Clamp01(Vector3.Dot(viewDir, H));
-        float ndotv = Mathf.Clamp01(Vector3.Dot(viewDir, normal));
-        float ndoth = Mathf.Clamp01(Vector3.Dot(normal, H));
-        float hDotL = Mathf.Clamp01(Vector3.Dot(H, L));
+
+        float nDotL = Mathf.Max(Vector3.Dot(normal, L), 1e-8f);
+        float vdoth = Mathf.Max(Mathf.Abs(Vector3.Dot(viewDir, H)), 1e-8f);
+        float ndotv = Mathf.Max(Mathf.Abs(Vector3.Dot(viewDir, normal)), 1e-8f);
+        float ndoth = Mathf.Max(Mathf.Abs(Vector3.Dot(normal, H)), 1e-8f);
+
+
 
         // float Fss90 = Mathf.Sqrt(roughness) * hDotL * hDotL;
         // float FD90 = 0.5f + 2f * Fss90;
@@ -92,17 +90,17 @@ class FrDisneyIntegrator : IMaterialColorCalculator
         //frosbite Disney Diffuse
         float energyBias = Mathf.Lerp(0f, 0.5f, roughness);
         float energyFactor = Mathf.Lerp(1.0f, 1.0f / 1.51f, roughness);
-        float FD90 = energyBias + 2.0f * hDotL * hDotL * roughness;
+        float FD90 = energyBias + 2.0f * vdoth * vdoth * roughness;
         float lightScatter = (1f + (FD90 - 1f) * Mathf.Pow(1f - nDotL, 5f));
         float viewScatter = (1f + (FD90 - 1f) * Mathf.Pow(1f - ndotv, 5f));
         float fd = lightScatter * viewScatter * energyFactor;
-        float diffuseBrdf = /*nDotL * ndotv **/ fd / Mathf.PI;
+        float diffuseBrdfMulPi = /*nDotL * ndotv **/ fd ;
 
         //   float diffuseBrdf = 1.0f/Mathf.PI; //lambert
 
         Color sampleValue =  Color.black;
        
-        sampleValue.b = diffuseBrdf ;
+        sampleValue.b = diffuseBrdfMulPi;
 
         return sampleValue;
         
