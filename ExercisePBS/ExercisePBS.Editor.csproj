@@ -301,6 +301,8 @@
     <Compile Include="Assets\Editor\RenderCubemapWizard.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Scenes\README.txt" />
+    <None Include="Assets\Scripts\README.txt" />
     <None Include="Assets\Shaders\CubeMapping.shader" />
     <None Include="Assets\Shaders\CubeMappingRef.shader" />
     <None Include="Assets\Shaders\DisplayLUT.shader" />
@@ -322,6 +324,7 @@
     <None Include="Assets\Shaders\PanoMapping.shader" />
     <None Include="Assets\Shaders\PanoMappingRef.shader" />
     <None Include="Assets\Shaders\PureColor.shader" />
+    <None Include="Assets\Shaders\README.txt" />
     <None Include="Assets\Shaders\SplitSumApply.shader" />
     <None Include="Assets\Shaders\SplitSumApply1911.shader" />
   </ItemGroup>

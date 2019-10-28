@@ -1,4 +1,4 @@
-﻿Shader "Exercises/PBS/PBSSphere"
+﻿Shader "Exercises/PBS/PBS_MetallicSetup"
 {
 	Properties
 	{
@@ -247,33 +247,34 @@
 
 					#endif
 
+					  half3 frSpecEnvL, envBRDF;
+
 					#ifdef _INDIRECTSPECIBL_CODAPPROX
 					   //option4 : specIBL --- cod approx
-					   half3 codspecEnvL = CoDSpecEnvLFrosbite(_MaxSampleCountMonteCarlo, worldViewDir, worldNormal, specularF0, f90, _Roughness);
-					   half3 codspecEnvbrdf = CODBlackOps2EnvSpecBRDF(specularF0, _Roughness, ndotv);
-					   //return float4(codspecEnvbrdf, 1);
-					   indirectSpec = codspecEnvL * codspecEnvbrdf;
+					   frSpecEnvL = CoDSpecEnvLFrosbite(_MaxSampleCountMonteCarlo, worldViewDir, worldNormal, specularF0, f90, _Roughness);
+					   envBRDF = CODBlackOps2EnvSpecBRDF(specularF0, _Roughness, ndotv);
+					   indirectSpec = frSpecEnvL * envBRDF;
 					#endif
 					
 					#ifdef _INDIRECTSPECIBL_UEAPPROX
 					   //option5 : specIBL --- UE approx
-					   half3 frSpecEnvL = CoDSpecEnvLFrosbite(_MaxSampleCountMonteCarlo, worldViewDir, worldNormal, specularF0, f90, _Roughness);
-					   half3 uespecEnvbrdf = UESpecEnvBRDFApprox(specularF0, _Roughness, ndotv);
-					   indirectSpec = frSpecEnvL * uespecEnvbrdf;
+					    frSpecEnvL = CoDSpecEnvLFrosbite(_MaxSampleCountMonteCarlo, worldViewDir, worldNormal, specularF0, f90, _Roughness);
+						envBRDF = UESpecEnvBRDFApprox(specularF0, _Roughness, ndotv);
+					   indirectSpec = frSpecEnvL * envBRDF;
 					#endif
 					  
 					#ifdef _INDIRECTSPECIBL_UNITYAPPROX
 					   //option6 : specIBL --- Unity Presented approx
-					   half3 frSpecEnvL = CoDSpecEnvLFrosbite(_MaxSampleCountMonteCarlo, worldViewDir, worldNormal, specularF0, f90, _Roughness);
-					   half3 unityPPTSpecEnvbrdf = UnityPPTSpecEnvBRDFApprox(specularF0, _Roughness, ndotv);
-					   indirectSpec = frSpecEnvL * unityPPTSpecEnvbrdf;
+					    frSpecEnvL = CoDSpecEnvLFrosbite(_MaxSampleCountMonteCarlo, worldViewDir, worldNormal, specularF0, f90, _Roughness);
+					    envBRDF = UnityPPTSpecEnvBRDFApprox(specularF0, _Roughness, ndotv);
+					   indirectSpec = frSpecEnvL * envBRDF;
 					#endif
 
 					#ifdef _INDIRECTSPECIBL_UNITYACTUALAPPROX
 					   //option7 : specIBL --- Unity actual approx
-					   half3 frSpecEnvL = CoDSpecEnvLFrosbite(_MaxSampleCountMonteCarlo, worldViewDir, worldNormal, specularF0, f90, _Roughness);
-					   half3 unityActualSpecEnvbrdf = UnityBRDFSpecEnvBRDFApprox(specularF0, _Roughness, ndotv, _Metallic,true);
-					   indirectSpec = frSpecEnvL * unityActualSpecEnvbrdf;
+					    frSpecEnvL = CoDSpecEnvLFrosbite(_MaxSampleCountMonteCarlo, worldViewDir, worldNormal, specularF0, f90, _Roughness);
+					    envBRDF = UnityBRDFSpecEnvBRDFApprox(specularF0, _Roughness, ndotv, _Metallic,true);
+					   indirectSpec = frSpecEnvL * envBRDF;
 					#endif
 					  
 
@@ -296,9 +297,9 @@
 
 				
 					#ifdef _INDIRECTIBL_CODAPPROX 
-					   half3 codspecEnvL = CoDSpecEnvLFrosbite(_MaxSampleCountMonteCarlo, worldViewDir, worldNormal, specularF0, f90, _Roughness);
-					   half3 codspecEnvbrdf = CODBlackOps2EnvSpecBRDF(specularF0, _Roughness, ndotv);
-					   indirectSpec = codspecEnvL * codspecEnvbrdf;
+					    frSpecEnvL = CoDSpecEnvLFrosbite(_MaxSampleCountMonteCarlo, worldViewDir, worldNormal, specularF0, f90, _Roughness);
+					    envBRDF = CODBlackOps2EnvSpecBRDF(specularF0, _Roughness, ndotv);
+					   indirectSpec = frSpecEnvL * envBRDF;
 
 					   float3 reflDir = reflect(-worldViewDir, worldNormal);
 
@@ -309,24 +310,24 @@
 					#endif
 
 					#ifdef _INDIRECTIBL_UEAPPROX 
-					    half3 frSpecEnvL = CoDSpecEnvLFrosbite(_MaxSampleCountMonteCarlo, worldViewDir, worldNormal, specularF0, f90, _Roughness);
-					    half3 codspecEnvbrdf = UESpecEnvBRDFApprox(specularF0, _Roughness, ndotv);
-					    indirectSpec = frSpecEnvL * codspecEnvbrdf;
+					     frSpecEnvL = CoDSpecEnvLFrosbite(_MaxSampleCountMonteCarlo, worldViewDir, worldNormal, specularF0, f90, _Roughness);
+						 envBRDF = UESpecEnvBRDFApprox(specularF0, _Roughness, ndotv);
+					    indirectSpec = frSpecEnvL * envBRDF;
 						indirectCol = indirectSpec +  i.vlight *  diffCol * (1 - specularF0);
 					#endif
 
 					#ifdef _INDIRECTIBL_UNITYAPPROX  
-						half3 frSpecEnvL = CoDSpecEnvLFrosbite(_MaxSampleCountMonteCarlo, worldViewDir, worldNormal, specularF0, f90, _Roughness);
-						half3 unityPPTSpecEnvbrdf = UnityPPTSpecEnvBRDFApprox(specularF0, _Roughness, ndotv);
-						indirectSpec = frSpecEnvL * unityPPTSpecEnvbrdf;
+						 frSpecEnvL = CoDSpecEnvLFrosbite(_MaxSampleCountMonteCarlo, worldViewDir, worldNormal, specularF0, f90, _Roughness);
+						 envBRDF = UnityPPTSpecEnvBRDFApprox(specularF0, _Roughness, ndotv);
+						indirectSpec = frSpecEnvL * envBRDF;
 						indirectCol = indirectSpec + i.vlight*  diffCol * (1 - specularF0);
 					#endif
 					
 					#ifdef _INDIRECTIBL_UNITYACTUALAPPROX
 
-						half3 frSpecEnvL = CoDSpecEnvLFrosbite(_MaxSampleCountMonteCarlo, worldViewDir, worldNormal, specularF0, f90, _Roughness);
-						half3 unityActualSpecEnvbrdf = UnityBRDFSpecEnvBRDFApprox(specularF0, _Roughness, ndotv, _Metallic);
-						indirectSpec = frSpecEnvL * unityActualSpecEnvbrdf;
+						frSpecEnvL = CoDSpecEnvLFrosbite(_MaxSampleCountMonteCarlo, worldViewDir, worldNormal, specularF0, f90, _Roughness);
+						envBRDF = UnityBRDFSpecEnvBRDFApprox(specularF0, _Roughness, ndotv, _Metallic,true);
+						indirectSpec = frSpecEnvL * envBRDF;
 
 						indirectCol = indirectSpec + i.vlight*  diffCol * (1 - specularF0);
 					#endif
