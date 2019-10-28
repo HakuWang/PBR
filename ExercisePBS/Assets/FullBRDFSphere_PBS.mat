@@ -9,7 +9,7 @@ Material:
   m_Name: FullBRDFSphere_PBS
   m_Shader: {fileID: 4800000, guid: 266bc28e0ca09074c81d3a4befbb6368, type: 3}
   m_ShaderKeywords: ENABLE_INDIRECT_LIGHTING ENABLE_REALTIME_SAMPLING _DIRECTDIFF_NONE
-    _DIRECTSPEC_NONE _INDIRECTIBL_UNITYACTUALAPPROX _INDIRECTSPECIBL_NONE _LUTIBLMODE_BOTH
+    _DIRECTSPEC_NONE _INDIRECTIBL_NONE _INDIRECTSPECIBL_UNITYAPPROX _LUTIBLMODE_BOTH
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -51,13 +51,13 @@ Material:
     - _EnableRealtimeSampling: 1
     - _IBLMode: 0
     - _IndirectDiffFactor: 1
-    - _IndirectIBL: 6
+    - _IndirectIBL: 0
     - _IndirectSpecFactor: 1
-    - _IndirectSpecIBL: 0
+    - _IndirectSpecIBL: 6
     - _IndirectWeight: 1
     - _LutIBLMode: 1
     - _MaxSampleCountMonteCarlo: 128
-    - _Metallic: 0.428
+    - _Metallic: 1
     - _Roughness: 0.02
     - _phi: 1.61
     - roughness: 0.491
