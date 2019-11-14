@@ -566,6 +566,7 @@ GameObject:
   - component: {fileID: 1002392857}
   - component: {fileID: 1002392856}
   - component: {fileID: 1002392860}
+  - component: {fileID: 1002392861}
   m_Layer: 0
   m_Name: Debug
   m_TagString: Untagged
@@ -663,6 +664,20 @@ MonoBehaviour:
   testIndex: 206
   roughness: 0.1
   sampleTimes: 200
+--- !u!114 &1002392861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1002392855}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0316ae413f58b3440a33cbfc70c21b1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  oldShader: {fileID: 4800000, guid: 266bc28e0ca09074c81d3a4befbb6368, type: 3}
+  newShader: {fileID: 4800000, guid: 38a009b219bd948428c2e3783417d560, type: 3}
+  isReplace: 1
 --- !u!1 &1111105617
 GameObject:
   m_ObjectHideFlags: 0

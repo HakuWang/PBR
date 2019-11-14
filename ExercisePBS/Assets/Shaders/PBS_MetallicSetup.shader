@@ -141,8 +141,8 @@
 				half3 h = normalize((worldLight + worldViewDir));
 				half ndoth = dot(worldNormal, h);
 				half ndotv = max(dot(worldNormal, worldViewDir), 1e-8);
-				half vdoth = dot(worldViewDir, h);
-				float hdotl = dot(h, worldLight);
+				half vdoth = max(dot(worldViewDir, h), 1e-4);
+				float hdotl = max(dot(h, worldLight), 1e-4);
 				 
 				_Roughness = min(_Roughness,0.98);
 				
@@ -260,7 +260,7 @@
 					   //option5 : specIBL --- UE approx
 					    frSpecEnvL = CoDSpecEnvLFrosbite(_MaxSampleCountMonteCarlo, worldViewDir, worldNormal, specularF0, f90, _Roughness);
 						envBRDF = UESpecEnvBRDFApprox(specularF0, _Roughness, ndotv);
-					   indirectSpec = frSpecEnvL * envBRDF;
+                        indirectSpec = envBRDF;// /*frSpecEnvL * */envBRDF;
 					#endif
 					  
 					#ifdef _INDIRECTSPECIBL_UNITYAPPROX
